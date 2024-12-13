@@ -32,9 +32,11 @@ public class RecForYouProcess {
             return new ArrayList<>();
         }
         final int CANDIDATE_SIZE = 800;
+        //通过排名先后来选出800部电影
         List<Movie> candidates = DataManager.getInstance().getMovies(CANDIDATE_SIZE, "rating");
 
         //load user emb from redis if data source is redis
+        //加载用户的特征
         if (Config.EMB_DATA_SOURCE.equals(Config.DATA_SOURCE_REDIS)){
             String userEmbKey = "uEmb:" + userId;
             String userEmb = RedisClient.getInstance().get(userEmbKey);

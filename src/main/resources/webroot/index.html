@@ -24,6 +24,7 @@
                     <a href="."><img alt="Sparrow RecSys Logo" height="30px" src="./images/sparrowrecsyslogo.png"/></a>
                 </span>
             </div>
+            <!--这是搜索栏 -->
             <div class="base-header-search-container">
                 <form class="form-inline ng-pristine ng-valid ng-touched" novalidate="" role="form">
                     <div class="input-group input-group-sm base-header-search-box">
@@ -35,7 +36,7 @@
                           style="position: relative; vertical-align: top; background-color: transparent;"/>
                 </span>
                         <span class="input-group-btn">
-                            <button class="btn btn-default btn-sm no-glow">
+                            <button type = "button" class="btn btn-default btn-sm no-glow" onclick="performSearch()">
                                 <i class="fa fa-search"></i>
                             </button>
                         </span>
@@ -45,6 +46,7 @@
         </div>
     </header>
     <div class="base-compact-header-spacer"></div>
+    <!--主体部分在这里-->
     <div class="ml4-container" style="min-height: 920px;">
         <div id="main-container">
             <div class="frontpage" id="recPage">
@@ -105,11 +107,15 @@
 </div>
 </body>
 
+<!-- 动态插入内容 -->
+
 <script type="text/javascript">
 
 var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + "/"
+alert("baseurl= "+ baseUrl);
 
+//在recpage这个容器中插入 内容 插入8个推荐项
 addGenreRow('#recPage', 'Action', 'action-collection', 8, baseUrl);
 addGenreRow('#recPage', 'Romance', 'romance-collection', 8, baseUrl);
 addGenreRow('#recPage', 'Thriller', 'thriller-collection', 8, baseUrl);
@@ -118,4 +124,29 @@ addGenreRow('#recPage', 'Drama', 'drama-collection', 8, baseUrl);
 addGenreRow('#recPage', 'Adventure', 'adventure-collection', 8, baseUrl);
 
 </script>
+
+<script>
+    // 搜索功能函数
+    function performSearch() {
+        // 获取输入框的值
+        const query = document.getElementById('omnisearch-typeahead').value;
+
+        // 检查是否有输入
+        if (query.trim() === '') {
+            alert('请输入搜索内容');
+            return;
+        }
+
+        // 这里是处理搜索逻辑的地方，可以执行API请求、页面跳转等
+        console.log('搜索内容：', query);
+
+        // 示例：简单的页面跳转（假设搜索是跳转到搜索结果页面）
+        // window.location.href = `/search?q=${encodeURIComponent(query)}`;
+
+        // 示例：直接显示搜索内容
+        alert(`你搜索的内容是：${query}`);
+    }
+</script>
+
+
 </html>

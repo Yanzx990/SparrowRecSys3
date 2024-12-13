@@ -33,7 +33,7 @@ public class RecommendationService extends HttpServlet {
             String sortby = request.getParameter("sortby");
             //a simple method, just fetch all the movie in the genre
             List<Movie> movies = DataManager.getInstance().getMoviesByGenre(genre, Integer.parseInt(size),sortby);
-
+            //核心方法，根据电影类别、数量、排序规则获取推荐列表。
             //convert movie list to json format and return
             ObjectMapper mapper = new ObjectMapper();
             String jsonMovies = mapper.writeValueAsString(movies);

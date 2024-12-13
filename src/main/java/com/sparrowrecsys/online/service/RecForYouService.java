@@ -1,5 +1,5 @@
 package com.sparrowrecsys.online.service;
-
+//根据用户 ID、推荐数量、推荐模型生成电影推荐列表，并以 JSON 格式返回给客户端
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparrowrecsys.online.recprocess.RecForYouProcess;
 import com.sparrowrecsys.online.util.ABTest;
@@ -37,6 +37,8 @@ public class RecForYouService extends HttpServlet {
             if (Config.IS_ENABLE_AB_TEST){
                 model = ABTest.getConfigByUserId(userId);
             }
+            //检查系统是否启用了 A/B 测试。
+            //A/B 测试是一种实验方法，随机分配用户到不同的模型中，测试哪种模型效果更好。
 
             //a simple method, just fetch all the movie in the genre
             List<Movie> movies = RecForYouProcess.getRecList(Integer.parseInt(userId), Integer.parseInt(size), model);
