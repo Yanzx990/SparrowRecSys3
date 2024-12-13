@@ -99,6 +99,12 @@ function addRowFrameWithoutLink(pageId, rowName, rowId, baseUrl) {
 
 function addGenreRow(pageId, rowName, rowId, size, baseUrl) {
     addRowFrame(pageId, rowName, rowId, baseUrl);
+//      baseUrl：基础 URL，比如 https://example.com/。
+//      "getrecommendation"：服务端的接口路径，用于获取电影推荐。可以在RecSysServer中找到
+//      ?genre=：表示查询参数，指定获取哪种类别（rowName，例如 Action）。
+//      &size=：指定获取的电影数量（size，例如 10）。
+//      &sortby=rating：指定按评分排序的逻辑，可能从高到低排序。
+
     $.getJSON(baseUrl + "getrecommendation?genre="+rowName+"&size="+size+"&sortby=rating", function(result){
         $.each(result, function(i, movie){
           appendMovie2Row(rowId, movie.title, movie.movieId, movie.releaseYear, movie.averageRating.toPrecision(2), movie.ratingNumber, movie.genres,baseUrl);
@@ -289,8 +295,44 @@ function addUserDetails(containerId, userId, baseUrl) {
         $("#"+containerId).prepend(userDetails);
     });
 };
+// 搜索功能函数
+function searchMovie(query) {
+    // 用于搜索的 AJAX 调用示例
+    /**
+      AJAX（Asynchronous JavaScript and XML）是一种用于创建动态网页应用的技术，能够在不重新加载整个页面的情况下，与服务器进行异步通信，从而提升用户体验。
+    **/
+    const baseUrl = window.location.origin; // 获取基本 URL
+    //使用 jQuery 的 $.getJSON 方法发送一个 AJAX 请求，以获取服务器返回的 JSON 数据。
+    $.getJSON(baseUrl + "/searchmovie?query=" + query, function (result) {
+        // 假设返回的结果是一个电影列表
+        if (result && result.length > 0) {
+            console.log("搜索结果: ", result);
 
+            // 清空现有内容
+            $('#recPage').empty();
 
+            // 动态渲染搜索结果
+            result.forEach((movie) => {
+                // 插入电影内容到页面
+                // appendMovie2Row是原有的function
+                appendMovie2Row(
+                    'recPage',
+                    movie.title,
+                    movie.movieId,
+                    movie.releaseYear,
+                    movie.averageRating.toPrecision(2),
+                    movie.ratingNumber,
+                    movie.genres,
+                    baseUrl
+                );
+            });
+        } else {
+            alert("未找到匹配的电影！");
+        }
+    }).fail(function () {
+        alert("搜索请求失败，请稍后再试！");
+    });
+}
 
 
 

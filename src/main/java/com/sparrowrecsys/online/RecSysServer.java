@@ -75,7 +75,7 @@ public class RecSysServer {
         context.addServlet(new ServletHolder(new SimilarMovieService()), "/getsimilarmovie");
         context.addServlet(new ServletHolder(new RecommendationService()), "/getrecommendation");
         context.addServlet(new ServletHolder(new RecForYouService()), "/getrecforyou");
-
+        context.addServlet(new ServletHolder(new SearchMovieService()), "/searchmovie");
         //set url handler
         server.setHandler(context);
         System.out.println("RecSys Server has started.");

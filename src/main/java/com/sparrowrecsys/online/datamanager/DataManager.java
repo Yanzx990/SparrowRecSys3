@@ -281,6 +281,18 @@ public class DataManager {
             }
             return movies;
     }
+    public List<Movie> searchMovies(String query) {
+        List<Movie> result = new ArrayList<>();
+
+        // 遍历所有电影，查找标题包含查询关键词的电影
+        for (Movie movie : movieMap.values()) {
+            if (movie.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                result.add(movie);
+            }
+        }
+
+        return result;
+    }
 
     //get movie object by movie id
     public Movie getMovieById(int movieId){
