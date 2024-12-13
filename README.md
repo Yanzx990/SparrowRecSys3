@@ -61,7 +61,7 @@ SparrowRecSys技术架构遵循经典的工业级深度学习推荐系统架构�
 
 ![](https://github.com/Yanzx990/SparrowRecSys3/blob/yanzx/docs/image-20241212160619506.png?raw=true)
 
-![image-20241212161340623](C:\Users\34184\AppData\Roaming\Typora\typora-user-images\image-20241212161340623.png)
+![image-20241212161340623](https://github.com/Yanzx990/SparrowRecSys3/blob/yanzx/docs/image-20241212161340623.png?raw=true)
 
 
 
