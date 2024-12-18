@@ -38,8 +38,8 @@ public class MovieService extends HttpServlet {
             if (null != movie) {
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonMovie = mapper.writeValueAsString(movie);
-                System.out.println("movie has found, id = " + movieId);
-                System.out.println("json is "+ jsonMovie);
+                //System.out.println("movie has found, id = " + movieId);
+                //System.out.println("json is "+ jsonMovie);
                 response.getWriter().println(jsonMovie);
             }else {
                 response.getWriter().println("");

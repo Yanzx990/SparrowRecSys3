@@ -2,12 +2,11 @@ import tensorflow as tf
 
 # Training samples path, change to your local path
 training_samples_file_path = tf.keras.utils.get_file("trainingSamples.csv",
-                                                     "file:///Users/zhewang/Workspace/SparrowRecSys/src/main"
-                                                     "/resources/webroot/sampledata/trainingSamples.csv")
+                                                     "file:///D:/SparrowRecSys/src/main/resources/webroot/sampledata/trainingSamples.csv")
 # Test samples path, change to your local path
 test_samples_file_path = tf.keras.utils.get_file("testSamples.csv",
-                                                 "file:///Users/zhewang/Workspace/SparrowRecSys/src/main"
-                                                 "/resources/webroot/sampledata/testSamples.csv")
+                                                 "file:///D:/SparrowRecSys/src/main/resources/webroot/sampledata/testSamples.csv")
+
 
 
 # load sample as tf dataset
@@ -26,7 +25,7 @@ def get_dataset(file_path):
 train_dataset = get_dataset(training_samples_file_path)
 test_dataset = get_dataset(test_samples_file_path)
 
-# define input for keras model
+# define input for keras model 输入层定义
 inputs = {
     'movieAvgRating': tf.keras.layers.Input(name='movieAvgRating', shape=(), dtype='float32'),
     'movieRatingStddev': tf.keras.layers.Input(name='movieRatingStddev', shape=(), dtype='float32'),
@@ -133,3 +132,13 @@ for prediction, goodRating in zip(predictions[:12], list(test_dataset)[0][1][:12
     print("Predicted good rating: {:.2%}".format(prediction[0]),
           " | Actual rating label: ",
           ("Good Rating" if bool(goodRating) else "Bad Rating"))
+
+tf.keras.models.save_model(
+    model,
+    "D:/SparrowRecSys/src/main/resources/webroot/modeldata/DeepFM/003",
+    overwrite=True,
+    include_optimizer=True,
+    save_format=None,
+    signatures=None,
+    options=None
+)

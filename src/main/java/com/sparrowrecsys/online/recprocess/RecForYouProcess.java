@@ -1,9 +1,11 @@
 package com.sparrowrecsys.online.recprocess;
-
+import java.util.*;
+import java.util.stream.*;
 import com.sparrowrecsys.online.datamanager.DataManager;
 import com.sparrowrecsys.online.datamanager.User;
 import com.sparrowrecsys.online.datamanager.Movie;
 import com.sparrowrecsys.online.datamanager.RedisClient;
+import com.sparrowrecsys.online.datamanager.Rating;
 import com.sparrowrecsys.online.util.Config;
 import com.sparrowrecsys.online.util.Utility;
 import org.json.JSONArray;
@@ -19,6 +21,42 @@ import static com.sparrowrecsys.online.util.HttpClient.asyncSinglePostRequest;
 
 public class RecForYouProcess {
 
+    public static float calculateStandardDeviation(List<Rating> ratings) {
+        // 提取 score
+        List<Float> scores = ratings.stream()
+                .map(Rating::getScore)
+                .collect(Collectors.toList());
+
+        // 计算均值
+        float mean = (float) scores.stream()
+                .mapToDouble(Float::doubleValue)
+                .average()
+                .orElse(0.0);
+
+        // 计算平方差的平均值
+        float variance = (float) scores.stream()
+                .map(score -> (score - mean) * (score - mean)) // 计算平方差
+                .reduce(0.0f, Float::sum) / scores.size();
+
+        // 返回标准差
+        return (float) Math.sqrt(variance);
+    }
+
+    public static int getUserAvgReleaseYear(List<Rating> userRatings){
+        int totalReleaseYear = 0;
+        int count = 0;
+
+        for(Rating rating : userRatings){
+            int movieid = rating.getMovieId();
+            Movie movie = DataManager.getInstance().getMovieById(movieid);
+            if (movie != null) {
+                totalReleaseYear += movie.getReleaseYear();
+                count++;
+            }
+        }
+        return count > 0 ? (int) (totalReleaseYear / (double) count): 0;
+    }
+
     /**
      * get recommendation movie list
      * @param userId input user id
@@ -26,7 +64,9 @@ public class RecForYouProcess {
      * @param model model used for calculating similarity
      * @return  list of similar movies
      */
+
     public static List<Movie> getRecList(int userId, int size, String model){
+        System.out.println("getRecList");
         User user = DataManager.getInstance().getUserById(userId);
         if (null == user){
             return new ArrayList<>();
@@ -81,6 +121,9 @@ public class RecForYouProcess {
             case "nerualcf":
                 callNeuralCFTFServing(user, candidates, candidateScoreMap);
                 break;
+            case "mixmodel":
+                callMixmodelServing(user,candidates,candidateScoreMap);
+                break;
             default:
                 //default ranking in candidate set
                 for (int i = 0 ; i < candidates.size(); i++){
@@ -113,6 +156,7 @@ public class RecForYouProcess {
      * @param candidateScoreMap save prediction score into the score map
      */
     public static void callNeuralCFTFServing(User user, List<Movie> candidates, HashMap<Movie, Double> candidateScoreMap){
+        System.out.println("callNeuralCFTFServing");
         if (null == user || null == candidates || candidates.size() == 0){
             return;
         }
@@ -129,6 +173,67 @@ public class RecForYouProcess {
         instancesRoot.put("instances", instances);
 
         //need to confirm the tf serving end point
+        System.out.println("test1");
+        String predictionScores = asyncSinglePostRequest("http://localhost:8501/v1/models/recmodel:predict", instancesRoot.toString());
+        System.out.println("send user" + user.getUserId() + " request to tf serving.");
+
+        JSONObject predictionsObject = new JSONObject(predictionScores);
+        JSONArray scores = predictionsObject.getJSONArray("predictions");
+        for (int i = 0 ; i < candidates.size(); i++){
+            candidateScoreMap.put(candidates.get(i), scores.getJSONArray(i).getDouble(0));
+        }
+    }
+    public static void callMixmodelServing(User user, List<Movie> candidates, HashMap<Movie, Double> candidateScoreMap){
+        System.out.println("callMixmodelServing");
+        if (null == user || null == candidates || candidates.size() == 0){
+            return;
+        }
+
+//        先确定需要的参数都有：
+//        'movieAvgRating'
+//        'movieRatingStddev'
+//        'movieRatingCount'
+//        'userAvgRating'
+//        'userRatingStddev'
+//        'userRatingCount'
+//        'releaseYear'
+//        'userAvgReleaseYear'
+//        'movieId'
+//        'userId'
+//        'userRatedMovie1'
+//        'userGenre1'
+//        'movieGenre1'
+
+        JSONArray instances = new JSONArray();
+        for (Movie m : candidates){
+            JSONObject instance = new JSONObject();
+            instance.put("userId", user.getUserId());
+            instance.put("movieId", m.getMovieId());
+            instance.put("movieAvgRating",m.getAverageRating());
+            List<Rating> movieRatingList = m.getRatings();
+            List<Rating> userRatingList = user.getRatings();
+            float movieRatingStddev = calculateStandardDeviation(movieRatingList);
+            float userRatingStddev = calculateStandardDeviation(userRatingList);
+            instance.put("movieRatingStddev",movieRatingStddev);
+            instance.put("movieRatingCount",m.getRatingNumber());
+            instance.put("userAvgRating",user.getAverageRating());
+            instance.put("userRatingStddev",userRatingStddev);
+            instance.put("userRatingCount",user.getRatingCount());
+            instance.put("releaseYear",m.getReleaseYear());
+            int userAvgReleaseYear = getUserAvgReleaseYear(userRatingList);
+            instance.put("userAvgReleaseYear",userAvgReleaseYear);
+            int userRatedMovid1 = userRatingList.get(userRatingList.size() - 1).getMovieId();
+            instance.put("userRatedMovie1",userRatedMovid1);
+            instance.put("userGenre1",DataManager.getInstance().getMovieById(userRatedMovid1).getGenres().get(0));
+            instance.put("movieGenre1",m.getGenres().get(0));
+            instances.put(instance);
+        }
+
+        JSONObject instancesRoot = new JSONObject();
+        instancesRoot.put("instances", instances);
+
+        //need to confirm the tf serving end point
+        System.out.println("mixModel go go go");
         String predictionScores = asyncSinglePostRequest("http://localhost:8501/v1/models/recmodel:predict", instancesRoot.toString());
         System.out.println("send user" + user.getUserId() + " request to tf serving.");
 

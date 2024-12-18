@@ -108,7 +108,7 @@ function addGenreRow(pageId, rowName, rowId, size, baseUrl) {
     $.getJSON(baseUrl + "getrecommendation?genre="+rowName+"&size="+size+"&sortby=rating", function(result){
         $.each(result, function(i, movie){
           appendMovie2Row(rowId, movie.title, movie.movieId, movie.releaseYear, movie.averageRating.toPrecision(2), movie.ratingNumber, movie.genres,baseUrl);
-        });
+        })
     });
 };
 
@@ -301,9 +301,8 @@ function searchMovie(query) {
     /**
       AJAX（Asynchronous JavaScript and XML）是一种用于创建动态网页应用的技术，能够在不重新加载整个页面的情况下，与服务器进行异步通信，从而提升用户体验。
     **/
-    const baseUrl = window.location.origin; // 获取基本 URL
     //使用 jQuery 的 $.getJSON 方法发送一个 AJAX 请求，以获取服务器返回的 JSON 数据。
-    $.getJSON(baseUrl + "/searchmovie?query=" + query, function (result) {
+    $.getJSON(baseUrl + "searchmovie?query=" + query, function (result) {
         // 假设返回的结果是一个电影列表
         if (result && result.length > 0) {
             console.log("搜索结果: ", result);

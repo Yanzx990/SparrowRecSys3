@@ -2,12 +2,12 @@ import tensorflow as tf
 
 # Training samples path, change to your local path
 training_samples_file_path = tf.keras.utils.get_file("trainingSamples.csv",
-                                                     "file:///Users/zhewang/Workspace/SparrowRecSys/src/main"
-                                                     "/resources/webroot/sampledata/trainingSamples.csv")
+                                                     "file:///D:/SparrowRecSys/src/main/resources/webroot/sampledata/trainingSamples.csv")
 # Test samples path, change to your local path
 test_samples_file_path = tf.keras.utils.get_file("testSamples.csv",
-                                                 "file:///Users/zhewang/Workspace/SparrowRecSys/src/main"
-                                                 "/resources/webroot/sampledata/testSamples.csv")
+                                                 "file:///D:/SparrowRecSys/src/main/resources/webroot/sampledata/testSamples.csv")
+
+
 
 
 # load sample as tf dataset
@@ -45,10 +45,19 @@ GENRE_FEATURES = {
 # all categorical features
 categorical_columns = []
 for feature, vocab in GENRE_FEATURES.items():
+    #tf.feature_column.categorical_column_with_vocabulary_list 方法把字符串型的特征转换成了 One-hot 特征。
+    # 在这个转换过程中我们需要用到一个词表，你可以看到我在开头就定义好了包含所有 genre 类别的词表 genre_vocab。
     cat_col = tf.feature_column.categorical_column_with_vocabulary_list(
         key=feature, vocabulary_list=vocab)
     emb_col = tf.feature_column.embedding_column(cat_col, 10)
+    #映射成了10维的embedding向量
     categorical_columns.append(emb_col)
+
+# 在转换 userId 和 movieId 特征时，我们又使用了 tf.feature_column.categorical_column_with_identity 方法把
+# ID 转换成 One-hot 特征，这个方法不用词表，它会直接把 ID 值对应的那个维度置为 1。比如，我们输入这个
+# 方法的 movieId 是 340，总的 movie 数量是 1001，使用这个方法，就会把这个 1001 维的 One-hot movieId
+# 向量的第 340 维置为 1，剩余的维度都为 0。
+
 # movie id embedding feature
 movie_col = tf.feature_column.categorical_column_with_identity(key='movieId', num_buckets=1001)
 movie_emb_col = tf.feature_column.embedding_column(movie_col, 10)

@@ -18,6 +18,7 @@ object FeatureEngForRecModel {
   val redisEndpoint = "localhost"
   val redisPort = 6379
 
+  //若评分（rating）大于等于 3.5，标记为正样本 (label = 1)，否则为负样本 (label = 0)。
   def addSampleLabel(ratingSamples:DataFrame): DataFrame ={
     ratingSamples.show(10, truncate = false)
     ratingSamples.printSchema()
@@ -284,8 +285,8 @@ object FeatureEngForRecModel {
     splitAndSaveTrainingTestSamples(samplesWithUserFeatures, "/webroot/sampledata")
 
     //save user features and item features to redis for online inference
-    //extractAndSaveUserFeaturesToRedis(samplesWithUserFeatures)
-    //extractAndSaveMovieFeaturesToRedis(samplesWithUserFeatures)
+    extractAndSaveUserFeaturesToRedis(samplesWithUserFeatures)
+    extractAndSaveMovieFeaturesToRedis(samplesWithUserFeatures)
     spark.close()
   }
 

@@ -132,14 +132,17 @@ var windowLocation = window.location;
 var userId = getQueryString("id",windowLocation);
 var model = getQueryString("model",windowLocation);
 if(null == model){
-    model = "emb";
+    //model = "emb";
     //model = "nerualcf"
+    model = "mixmodel"
+
 }
 
 var baseUrl = windowLocation.protocol + "//" + windowLocation.host + "/"
 
 addUserDetails("user-details-container", userId, baseUrl);
 addRecForYou("#recPage", "recForYou", userId, model, baseUrl);
+alert("model= "+ model);
 addUserHistory("#recPage", "userHistory", userId, baseUrl);
 
 </script>

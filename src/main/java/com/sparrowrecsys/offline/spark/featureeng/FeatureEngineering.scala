@@ -95,6 +95,7 @@ object FeatureEngineering {
     val conf = new SparkConf()
       .setMaster("local")
       .setAppName("featureEngineering")
+      .set("spark.ui.port", "9876")
       .set("spark.submit.deployMode", "client")
 
     val spark = SparkSession.builder.config(conf).getOrCreate()

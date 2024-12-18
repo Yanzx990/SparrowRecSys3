@@ -253,6 +253,7 @@ public class DataManager {
     public List<Movie> getMoviesByGenre(String genre, int size, String sortBy){
         if (null != genre){
             List<Movie> movies = new ArrayList<>(this.genreReverseIndexMap.get(genre));
+            //System.out.println("sortBy is " + sortBy + " size is " + size);
             switch (sortBy){
                 case "rating":movies.sort((m1, m2) -> Double.compare(m2.getAverageRating(), m1.getAverageRating()));break;
                 case "releaseYear": movies.sort((m1, m2) -> Integer.compare(m2.getReleaseYear(), m1.getReleaseYear()));break;

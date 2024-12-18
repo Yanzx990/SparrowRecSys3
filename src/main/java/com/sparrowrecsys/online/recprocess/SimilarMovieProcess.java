@@ -22,7 +22,8 @@ public class SimilarMovieProcess {
         if (null == movie){
             return new ArrayList<>();
         }
-        List<Movie> candidates = candidateGenerator(movie);
+        //candidates为候选电影列表
+        List<Movie> candidates = retrievalCandidatesByEmbedding(movie,100);
         List<Movie> rankedList = ranker(movie, candidates, model);
 
         if (rankedList.size() > size){
@@ -39,9 +40,14 @@ public class SimilarMovieProcess {
     public static List<Movie> candidateGenerator(Movie movie){
         HashMap<Integer, Movie> candidateMap = new HashMap<>();
         for (String genre : movie.getGenres()){
+            /**
+             * 这是单策略召回，只召回排名前100的相同类型的电影
+             */
             List<Movie> oneCandidates = DataManager.getInstance().getMoviesByGenre(genre, 100, "rating");
+            System.out.println("genres is " + genre);
             for (Movie candidate : oneCandidates){
                 candidateMap.put(candidate.getMovieId(), candidate);
+                System.out.println("candidate movie id = " + candidate.getMovieId());
             }
         }
         candidateMap.remove(movie.getMovieId());
@@ -59,7 +65,7 @@ public class SimilarMovieProcess {
         }
 
         HashSet<String> genres = new HashSet<>(movie.getGenres());
-
+//这个就是多路召回
         HashMap<Integer, Movie> candidateMap = new HashMap<>();
         for (String genre : genres){
             List<Movie> oneCandidates = DataManager.getInstance().getMoviesByGenre(genre, 20, "rating");
@@ -67,12 +73,12 @@ public class SimilarMovieProcess {
                 candidateMap.put(candidate.getMovieId(), candidate);
             }
         }
-
+//召回高分电影
         List<Movie> highRatingCandidates = DataManager.getInstance().getMovies(100, "rating");
         for (Movie candidate : highRatingCandidates){
             candidateMap.put(candidate.getMovieId(), candidate);
         }
-
+//召回近期电影
         List<Movie> latestCandidates = DataManager.getInstance().getMovies(100, "releaseYear");
         for (Movie candidate : latestCandidates){
             candidateMap.put(candidate.getMovieId(), candidate);
