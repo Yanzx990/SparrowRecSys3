@@ -118,7 +118,7 @@ public class RecForYouProcess {
                     candidateScoreMap.put(candidate, similarity);
                 }
                 break;
-            case "nerualcf":
+            case "neuralcf":
                 callNeuralCFTFServing(user, candidates, candidateScoreMap);
                 break;
             case "mixmodel":
@@ -175,9 +175,10 @@ public class RecForYouProcess {
         //need to confirm the tf serving end point
         System.out.println("test1");
         String predictionScores = asyncSinglePostRequest("http://localhost:8501/v1/models/recmodel:predict", instancesRoot.toString());
-        System.out.println("send user" + user.getUserId() + " request to tf serving.");
+        System.out.println("send user" + user.getUserId() + " request to tf serving(neuralCF).");
 
         JSONObject predictionsObject = new JSONObject(predictionScores);
+        System.out.println("predictionScores = "+predictionsObject);
         JSONArray scores = predictionsObject.getJSONArray("predictions");
         for (int i = 0 ; i < candidates.size(); i++){
             candidateScoreMap.put(candidates.get(i), scores.getJSONArray(i).getDouble(0));
@@ -234,7 +235,7 @@ public class RecForYouProcess {
 
         //need to confirm the tf serving end point
         System.out.println("mixModel go go go");
-        String predictionScores = asyncSinglePostRequest("http://localhost:8501/v1/models/recmodel:predict", instancesRoot.toString());
+        String predictionScores = asyncSinglePostRequest("http://localhost:8502/v1/models/recmodel:predict", instancesRoot.toString());
         System.out.println("send user" + user.getUserId() + " request to tf serving.");
 
         JSONObject predictionsObject = new JSONObject(predictionScores);

@@ -1,3 +1,85 @@
+
+/* 导航栏样式 */
+.main-nav {
+    background-color: #e74c3c;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* 适配原有样式 */
+.base-compact-header {
+    margin-bottom: 0;
+}
+
+/* 电影选择功能区 */
+.selection-bar {
+    background-color: #FF6347; /* 修改为橘红色 */
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.selection-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selection-container div {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.selection-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.selection-buttons a {
+    padding: 8px 15px;
+    background-color: transparent;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.selection-buttons a:hover {
+    background-color: #e63d1f;  /* 鼠标悬停时改变背景颜色 */
+    color: #d0b0a6; /* 鼠标悬停时变换文字颜色 */
+}
+
+
 .movie-card-actions-menu[_ngcontent-c2] {
         display: inline-block;
       }

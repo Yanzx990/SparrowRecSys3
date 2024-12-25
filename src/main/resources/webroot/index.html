@@ -15,6 +15,87 @@
     <script src="./js/jquery-3.2.1.min.js"></script>
     <script src="./js/recsys.js?v=1.19"></script>
 </head>
+<style>
+    /* 导航栏样式 */
+    .main-nav {
+        background-color: #e74c3c;
+        padding: 15px 0;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 20px;
+    }
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+    .nav-links a:hover {
+        background-color: #c0392b;
+        transform: translateY(-2px);
+    }
+
+    /* 适配原有样式 */
+    .base-compact-header {
+        margin-bottom: 0;
+    }
+
+    /* 电影选择功能区 */
+    .selection-bar {
+        background-color: #FF6347; /* 修改为橘红色 */
+        padding: 10px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .selection-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .selection-container div {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .selection-buttons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .selection-buttons a {
+        padding: 8px 15px;
+        background-color: transparent;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .selection-buttons a:hover {
+        background-color: #e63d1f;  /* 鼠标悬停时改变背景颜色 */
+        color: #d0b0a6; /* 鼠标悬停时变换文字颜色 */
+    }
+</style>
 <body id="root">
 <div>
     <header class="base-compact-header">
@@ -46,6 +127,21 @@
         </div>
     </header>
     <div class="base-compact-header-spacer"></div>
+
+
+    <div class="selection-bar">
+        <div class="selection-container">
+            <div>电影类别</div>
+            <div class="selection-buttons">
+                <a href="#" data-target="adventure-collection">冒险</a>
+                <a href="#" data-target="drama-collection">剧情</a>
+                <a href="#" data-target="comedy-collection">喜剧</a>
+                <a href="#" data-target="thriller-collection">惊悚</a>
+                <a href="#" data-target="romance-collection">爱情</a>
+                <a href="#" data-target="action-collection">动作</a>
+            </div>
+        </div>
+    </div>
     <!--主体部分在这里-->
     <div class="ml4-container" style="min-height: 920px;">
         <div id="main-container">
@@ -112,8 +208,7 @@
 <script type="text/javascript">
 
 var getUrl = window.location;
-var baseUrl = getUrl .protocol + "//" + getUrl.host + "/"
-alert("baseurl= "+ baseUrl);
+var baseUrl = getUrl .protocol + "//" + getUrl.host + "/";
 
 //在recPage这个容器中插入 内容 插入8个推荐项
 addGenreRow('#recPage', 'Action', 'action-collection', 8, baseUrl);
@@ -127,6 +222,26 @@ addGenreRow('#recPage', 'Adventure', 'adventure-collection', 8, baseUrl);
 document.addEventListener('DOMContentLoaded', function () {
     setupEnterKeyListener(); // 页面加载完成后设置监听器
 });
+$(document).ready(function() {
+$(".selection-buttons a").on('click', function(event) {
+    event.preventDefault();
+    var targetId = $(this).data('target');
+    var targetElement = $("#" + targetId);
+    if (targetElement.length) {
+        // 设置页面 header 的对应高度
+        var headerHeight = 90;
+
+        // 获取目标元素相对于文档顶部的位置
+        var targetOffsetTop = targetElement.offset().top;
+
+        // 使用 jQuery 的 animate 方法滚动到目标位置
+        $('html, body').animate({
+            scrollTop: targetOffsetTop - headerHeight  // 减去 header 高度
+        }, 800);  // 800ms 的平滑滚动动画时间
+    }
+});
+});
+</script>
 
 </script>
 
@@ -144,9 +259,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 打印用户输入
     console.log("用户搜索的内容: " + searchInput);
 
-
     // 调用 recsys.js 中新写的函数，传递搜索关键词
-    // typeof xxx === 'function' 是 JavaScript 中用于检查 searchMovie 是否是一个已定义且类型为函数的表达式。以下是详细解释：
+    // typeof 是 JavaScript 中用于检查 searchMovie 是否是一个已定义且类型为函数的表达式。
+
     if (typeof searchMovie === 'function') {
         searchMovie(searchInput);
     } else {

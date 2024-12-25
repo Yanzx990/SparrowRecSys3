@@ -26,16 +26,6 @@ genre_vocab = ['Film-Noir', 'Action', 'Adventure', 'Horror', 'Romance', 'War', '
                'Sci-Fi', 'Drama', 'Thriller',
                'Crime', 'Fantasy', 'Animation', 'IMAX', 'Mystery', 'Children', 'Musical']
 
-GENRE_FEATURES = {
-    'userGenre1': genre_vocab,
-    'userGenre2': genre_vocab,
-    'userGenre3': genre_vocab,
-    'userGenre4': genre_vocab,
-    'userGenre5': genre_vocab,
-    'movieGenre1': genre_vocab,
-    'movieGenre2': genre_vocab,
-    'movieGenre3': genre_vocab
-}
 
 # split as test dataset and training dataset
 train_dataset = get_dataset(training_samples_file_path)
@@ -52,18 +42,10 @@ user_emb_col = tf.feature_column.embedding_column(user_col, 10)
 # define input for keras model
 inputs = {
     'movieId': tf.keras.layers.Input(name='movieId', shape=(), dtype='int32'),
-    'movieGenre1': tf.keras.layers.Input(name='movieGenre1', shape=(), dtype='string'),
-    'userGenre1': tf.keras.layers.Input(name='userGenre1', shape=(), dtype='string'),
     'userId': tf.keras.layers.Input(name='userId', shape=(), dtype='int32'),
 }
 
-movie_genre_col = tf.feature_column.categorical_column_with_vocabulary_list('movieGenre1',vocabulary_list=genre_vocab)
-user_genre_col = tf.feature_column.categorical_column_with_vocabulary_list('userGenre1',vocabulary_list=genre_vocab)
-user_genre_emb_col = tf.feature_column.embedding_column(user_genre_col, dimension=10)
-movie_genre_emb_col = tf.feature_column.embedding_column(movie_genre_col, dimension=10)
-print("hello")
-item_feature_columns = [movie_emb_col, movie_genre_emb_col]
-user_feature_columns = [user_emb_col, user_genre_emb_col]
+
 
 # neural cf model arch two. only embedding in each tower, then MLP as the interaction layers
 def neural_cf_model_1(feature_inputs, item_feature_columns, user_feature_columns, hidden_units):
@@ -96,7 +78,7 @@ def neural_cf_model_2(feature_inputs, item_feature_columns, user_feature_columns
 
 
 # neural cf model architecture
-model = neural_cf_model_1(inputs, item_feature_columns, user_feature_columns, [10, 10])
+model = neural_cf_model_1(inputs, [movie_emb_col], [user_emb_col], [10, 10])
 
 # compile the model, set loss function, optimizer and evaluation metrics
 model.compile(
@@ -121,7 +103,7 @@ for prediction, goodRating in zip(predictions[:12], list(test_dataset)[0][1][:12
 
 tf.keras.models.save_model(
     model,
-    "file:///D:/SparrowRecSys/src/main/resources/webroot/modeldata/neuralcf/002",
+    "D:/SparrowRecSys/src/main/resources/webroot/modeldata/neuralcf/002",
     overwrite=True,
     include_optimizer=True,
     save_format=None,

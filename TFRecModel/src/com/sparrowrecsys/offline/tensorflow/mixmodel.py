@@ -162,16 +162,27 @@ movie_tower_colums = [tf.feature_column.numeric_column('releaseYear'),
                         tf.feature_column.numeric_column('movieRatingStddev'),
                         movie_emb_col]
 
+# movie_tower_colums=tf.feature_column.crossed_column(tf.feature_column.numeric_column('releaseYear'),
+#                                  tf.feature_column.numeric_column('movieRatingCount'),
+#                                  tf.feature_column.numeric_column('movieAvgRating'),
+#                                  tf.feature_column.numeric_column('movieRatingStddev'),
+#                                  movie_emb_col)
+
 user_tower_colums=[tf.feature_column.numeric_column('userRatingCount'),
                    tf.feature_column.numeric_column('userAvgRating'),
                    tf.feature_column.numeric_column('userRatingStddev'),
                    tf.feature_column.numeric_column('userAvgReleaseYear'),
                    user_emb_col]
 
+# user_tower_colums=tf.feature_column.crossed_column(tf.feature_column.numeric_column('userRatingCount'),
+#                                                    tf.feature_column.numeric_column('userAvgRating'),
+#                                                    tf.feature_column.numeric_column('userRatingStddev'),
+#                                                    tf.feature_column.numeric_column('userAvgReleaseYear'),
+#                                                    user_emb_col)
 # deep = tf.keras.layers.DenseFeatures(deep_feature_columns)(inputs)
 # deep = tf.keras.layers.Dense(64, activation='relu')(deep)
 # deep = tf.keras.layers.Dense(64, activation='relu')(deep)
-deep = neural_cf_model_2(inputs,movie_tower_colums,user_tower_colums,hidden_units=[10,10])
+deep = neural_cf_model_2(inputs,[movie_tower_colums],[user_tower_colums],hidden_units=[10,10])
 
 concat1_layer = tf.keras.layers.concatenate([fm1_first_order_layer, product_layer_item_user, product_layer_item_genre_user_genre,
                                             product_layer_item_genre_user, product_layer_user_genre_item], axis=1)
@@ -203,12 +214,12 @@ for prediction, goodRating in zip(predictions[:12], list(test_dataset)[0][1][:12
           " | Actual rating label: ",
           ("Good Rating" if bool(goodRating) else "Bad Rating"))
 
-tf.keras.models.save_model(
-    model,
-    "D:/SparrowRecSys/src/main/resources/webroot/modeldata/MixModel/003",
-    overwrite=True,
-    include_optimizer=True,
-    save_format=None,
-    signatures=None,
-    options=None
-)
+# tf.keras.models.save_model(
+#     model,
+#     "D:/SparrowRecSys/src/main/resources/webroot/modeldata/MixModel/003",
+#     overwrite=True,
+#     include_optimizer=True,
+#     save_format=None,
+#     signatures=None,
+#     options=None
+# )
